@@ -1,19 +1,14 @@
-var MongoClient = require('mongodb').MongoClient
-    , format = require('util').format;
+var User = require('models/user').User;
 
-MongoClient.connect('mongodb://127.0.0.1:27017/chat', function (err, db) {
-    if(err) throw err;
+var user = new User({
+    username: 'Tes2t',
+    password: 'secret1'
+});
 
-    var collection = db.collection('test_insert');
+user.save(function (err, user, affected) {
+    if (err) throw err;
 
-    collection.remove({}, function (err, affected) {
-        if(err) throw err;
-
-        collection.insert({a: 2}, function (err, docs) {
-            var cursor = collection.find({a: 2}).toArray(function (err, results) {
-                console.dir(results);
-                db.close();
-            });
-        });
+    User.findOne({username: 'Test'}, function (err, test) {
+        console.log(test);
     });
 });
