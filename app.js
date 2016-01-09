@@ -17,8 +17,9 @@ if (app.get('env') == 'development') {
     app.use(express.logger('default'));
 }
 
-app.use('views', __dirname + '/templates');
-app.use('view engine', 'ejs');
+app.engine('ejs', require('ejs-locals'));
+app.set('views', __dirname + '/template');
+app.set('view engine', 'ejs');
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(express.cookieParser());
@@ -37,9 +38,7 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', function (req, res, next) {
-    res.render('index', {
-        body: "<b>Hello</b>>"
-    })
+    res.render('index',{});
 });
 
 app.listen(3000, function(){
