@@ -4,10 +4,9 @@ var http = require('http');
 var path = require('path');
 var config = require('config');
 var log = require('libs/log')(module);
+var HttpError = require('error').HttpError;
 
 var app = express();
-
-//var app = module.exports = express.createServer();
 
 // Configuration
 
@@ -27,18 +26,25 @@ app.use(express.session({ secret: 'your secret here' }));
 app.use(app.router);
 app.use(express.static(__dirname + '/public'));
 
-app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
+require('routes')(app);
+app.use(require('middleware/sendHttpError'));
 
-app.configure('production', function(){
-  app.use(express.errorHandler());
-});
-
-// Routes
-
-app.get('/', function (req, res, next) {
-    res.render('index',{});
+app.use(function(err, req, res, next){
+    if (typeof err == 'number') {
+        err = new HttpError(err);
+    }
+    if (err instanceof HttpError) {
+        res.sendHttpError(err);
+    } else {
+        if(app.get('env') == 'development') {
+            var errorHandler = express.errorHandler();
+            errorHandler(err, req, res, next);
+        } else {
+            log.error(err);
+            err = new HttpError(500);
+            res.sendHttpError(err);
+        }
+    }
 });
 
 app.listen(3000, function(){

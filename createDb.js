@@ -32,7 +32,7 @@ function requireModels(callback) {
 function createUsers(callback) {
     var users = [
         {username: "Petya", password: "Pet"},
-        {username: "Petya", password: "Vas"},
+        {username: "Vasya", password: "Vas"},
         {username: "admin", password: "adminnn"}
     ];
 
