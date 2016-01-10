@@ -5,6 +5,7 @@ var path = require('path');
 var config = require('config');
 var log = require('libs/log')(module);
 var HttpError = require('error').HttpError;
+var mongoose = require('libs/mongoose');
 
 var app = express();
 
@@ -22,7 +23,21 @@ app.set('view engine', 'ejs');
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(express.cookieParser());
-app.use(express.session({ secret: 'your secret here' }));
+
+var MongoStore = require('connect-mongo')(express);
+
+app.use(express.session({
+    secret: config.get('session:secret'),
+    key: config.get('session:key'),
+    cookie: config.get('session:cookie'),
+    store: new MongoStore({mongooseConnection: mongoose.connection})
+}));
+
+app.use(function (req, res, next) {
+    req.session.numberOfVisits = req.session.numberOfVisits + 1 || 1;
+    res.send("Visits: " + req.session.numberOfVisits);
+});
+
 app.use(app.router);
 app.use(express.static(__dirname + '/public'));
 
