@@ -2,8 +2,8 @@ var express = require('express');
 var http = require('http');
 var path = require('path');
 var config = require('config');
-var log = require('lib/log')(module);
-var mongoose = require('lib/mongoose');
+var log = require('libs/log')(module);
+var mongoose = require('libs/mongoose');
 var HttpError = require('error').HttpError;
 
 var app = express();
@@ -24,7 +24,7 @@ app.use(express.bodyParser());
 
 app.use(express.cookieParser());
 
-var sessionStore = require('lib/sessionStore');
+var sessionStore = require('libs/sessionStore');
 
 app.use(express.session({
     secret: config.get('session:secret'),
